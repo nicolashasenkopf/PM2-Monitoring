@@ -13,6 +13,8 @@ export default function handler(req, res) {
       }
 
       pm2.stop(id, (error, proc) => {
+        pm2.disconnect();
+
         // handle errors
         if (error) {
           return res.status(500).json({ error });
