@@ -43,7 +43,11 @@ export default function Dashboard() {
             <AppInstance key={item.name} instance={item} />
           ))}
         </SimpleGrid>
-        <Button onClick={() => logout()}>Logout</Button>
+        <Center mt={10}>
+          <Button colorScheme="red" onClick={() => logout()}>
+            Abmelden
+          </Button>
+        </Center>
       </div>
     );
   } else {

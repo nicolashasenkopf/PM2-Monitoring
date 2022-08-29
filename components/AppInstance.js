@@ -101,6 +101,9 @@ export default function AppInstance(props) {
             textOverflow="ellipsis"
             whiteSpace="nowrap"
             overflow="hidden"
+            _dark={{
+              color: 'bg'
+            }}
           >
             {props.instance.name}
           </Text>
