@@ -8,22 +8,28 @@ import Head from "next/head";
 import Navbar from "../components/Navbar";
 import AppInstance from "../components/AppInstance";
 import useList from "../hooks/useList";
+import { async } from "@firebase/util";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
+  const [list, setList] = useState([]);
   const [user] = useAuthState(auth);
-  const { list, isLoading, isError } = useList();
   const router = useRouter();
 
   useEffect(() => {
     if (!user) {
       router.push("/login");
     } else {
-      if (!isLoading) {
-        setLoading(false);
-      }
+      let interval = setInterval(async () => {
+        const res = await fetch("/api/list");
+        const data = await res.json();
+        setList(data.list);
+      }, 3000);
+      setLoading(false);
+
+      return () => clearInterval(interval);
     }
-  }, [setLoading, user, router, isLoading]);
+  }, [setLoading, user, router, setList]);
 
   if (!loading) {
     return (
@@ -33,7 +39,7 @@ export default function Dashboard() {
         </Head>
         <Navbar />
         <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }}>
-          {list.list.map((item) => (
+          {list.map((item) => (
             <AppInstance key={item.name} instance={item} />
           ))}
         </SimpleGrid>
