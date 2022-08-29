@@ -69,10 +69,11 @@ export default function handler(req, res) {
       let mappedList = [];
       for (let i = 0; i < list.length; i++) {
         mappedList.push({
+          id: list[i].pid,
           name: list[i].name,
           status: list[i].pm2_env.status,
-          uptime: list[i].pm2_env.pm_uptime,
-          restarts: list[i].pm2_env.unstable_restarts,
+          uptime: Date.now() - list[i].pm2_env.pm_uptime,
+          restarts: list[i].pm2_env.restart_time,
           cpu: list[i].monit.cpu,
           memory: list[i].monit.memory,
         });

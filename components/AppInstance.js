@@ -7,6 +7,7 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
+import { async } from "@firebase/util";
 import {
   faArrowsRotate,
   faClock,
@@ -15,12 +16,15 @@ import {
   faPowerOff,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 
 export default function AppInstance(props) {
+  const [loading, setLoading] = useState(false);
+
   function getStatusBadgeColor(status) {
     if (status.toUpperCase() === "ONLINE") {
       return "green";
-    } else if (status.toUpperCase() === "OFFLINE") {
+    } else if (status.toUpperCase() === "STOPPED") {
       return "red";
     }
   }
@@ -28,9 +32,26 @@ export default function AppInstance(props) {
   function getPowerButtonColor(status) {
     if (status.toUpperCase() === "ONLINE") {
       return "red";
-    } else if (status.toUpperCase() === "OFFLINE") {
+    } else if (status.toUpperCase() === "STOPPED") {
       return "green";
     }
+  }
+
+  async function clickPowerButton(status) {
+    setLoading(true);
+    if (status.toUpperCase() === "ONLINE") {
+      const res = await fetch("/api/stop?id=" + props.instance.name);
+      setLoading(false);
+    } else if (status.toUpperCase() === "STOPPED") {
+      const res = await fetch("/api/start?id=" + props.instance.name);
+      setLoading(false);
+    }
+  }
+
+  async function clickRestartButton() {
+    setLoading(true);
+    const res = await fetch("/api/restart?id=" + props.instance.name);
+    setLoading(false);
   }
 
   function convertMiliseconds(time) {
@@ -80,6 +101,9 @@ export default function AppInstance(props) {
             textOverflow="ellipsis"
             whiteSpace="nowrap"
             overflow="hidden"
+            _dark={{
+              color: 'bg'
+            }}
           >
             {props.instance.name}
           </Text>
@@ -108,7 +132,7 @@ export default function AppInstance(props) {
           <FontAwesomeIcon icon={faMemory} />
           <Text ml={2}>Memory</Text>
           <Spacer />
-          <Text>{props.instance.memory} MB</Text>
+          <Text>{(props.instance.memory / 1000 / 1000).toFixed(1)} MiB</Text>
         </Flex>
 
         {/* UPTIME */}
@@ -133,11 +157,18 @@ export default function AppInstance(props) {
           <Button
             size="lg"
             colorScheme={getPowerButtonColor(props.instance.status)}
+            isLoading={loading}
+            onClick={() => clickPowerButton(props.instance.status)}
           >
             <FontAwesomeIcon icon={faPowerOff} />
           </Button>
           <Spacer />
-          <Button size="lg" colorScheme="orange">
+          <Button
+            size="lg"
+            colorScheme="orange"
+            isLoading={loading}
+            onClick={() => clickRestartButton()}
+          >
             <FontAwesomeIcon icon={faArrowsRotate} />
           </Button>
           <Spacer />
