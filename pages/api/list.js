@@ -71,8 +71,8 @@ export default function handler(req, res) {
         mappedList.push({
           name: list[i].name,
           status: list[i].pm2_env.status,
-          uptime: list[i].pm2_env.pm_uptime,
-          restarts: list[i].pm2_env.unstable_restarts,
+          uptime: Date.now() - list[i].pm2_env.pm_uptime,
+          restarts: list[i].pm2_env.restart_time,
           cpu: list[i].monit.cpu,
           memory: list[i].monit.memory,
         });

@@ -108,7 +108,7 @@ export default function AppInstance(props) {
           <FontAwesomeIcon icon={faMemory} />
           <Text ml={2}>Memory</Text>
           <Spacer />
-          <Text>{props.instance.memory} MB</Text>
+          <Text>{(props.instance.memory / 1000 / 1000).toFixed(1)} MiB</Text>
         </Flex>
 
         {/* UPTIME */}
